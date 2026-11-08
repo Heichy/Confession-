@@ -124,7 +124,7 @@ body.dark button.themeBtn.active{background:#ed347e;color:#fff}
 @keyframes beat{0%,100%{box-shadow:0 0 14px #ff5fa860,0 8px 20px #a8175940}50%{box-shadow:0 0 28px #ff5fa8c0,0 8px 20px #a8175940}}
 button.pbtn:not(.on){opacity:.45}
 .fnote{position:fixed;z-index:58;pointer-events:none;font-size:20px;color:#ff4d94;text-shadow:0 0 10px #ff9ccb;animation:floatUp 3.4s ease-out forwards}
-@keyframes floatUp{0%{opacity:0;transform:translate(0,0) scale(.6)}15%{opacity:1}100%{opacity:0;transform:translate(var(--dx,20px),-190px) rotate(var(--rot,15deg)) scale(1.1)}}
+@keyframes floatUp{0%{opacity:0;transform:translate(0,0) scale(.6)}15%{opacity:1}100%{opacity:0;transform:translate(var(--dx,20px),-110px) rotate(var(--rot,15deg)) scale(1.1)}}
 body.dark #subText{background:#2a0c33e6;color:#ffb3d6;border-color:#ff7eb688;box-shadow:0 0 18px #ff3d8a50,0 6px 18px #00000070}
 body.dark .player.playing{animation:beatD 1.2s ease-in-out infinite}
 @keyframes beatD{0%,100%{box-shadow:0 0 14px #ff3d8a50,0 8px 20px #00000070}50%{box-shadow:0 0 28px #ff3d8ab0,0 8px 20px #00000070}}
@@ -149,6 +149,66 @@ body.dark .player.playing{animation:beatD 1.2s ease-in-out infinite}
 @keyframes ledSpin{to{transform:rotate(360deg)}}
 @keyframes ledPulse{0%,100%{opacity:.5}50%{opacity:.95}}
 @media(prefers-reduced-motion:reduce){.avatar::before,.avatar::after{animation:none}}
+
+/* ===== PHONE FIXES: keep fixed bars from covering content ===== */
+#viz{opacity:.5}
+body.dark #viz{opacity:.4}
+body.dark .cal{background:#1a0820b8}
+#subText{background:#fff6fbf7}
+body.dark #subText{background:#2a0c33f8}
+.modal{padding:64px 14px 140px}
+.letter{max-height:calc(100vh - 210px);max-height:calc(100dvh - 210px)}
+@media (max-width:700px),(max-height:760px){
+  body{padding:64px 0 150px}
+}
+@media (max-width:430px){
+  .player{gap:3px;padding:5px 6px}
+  button.pbtn{width:34px;height:34px;font-size:15px}
+  #vol{width:50px}
+  .bars{padding-left:4px}
+}
+
+/* ===== SUBTITLE DRIFTS DOWN AUTOMATICALLY ===== */
+.subs{top:0;bottom:auto!important;--y0:72px;--y1:calc(100vh - 150px);opacity:0}
+@supports (height:100dvh){.subs{--y1:calc(100dvh - 150px)}}
+@keyframes subFall{
+  0%{opacity:0;transform:translate(-50%,var(--y0))}
+  10%{opacity:1}
+  80%{opacity:1}
+  100%{opacity:0;transform:translate(-50%,var(--y1))}
+}
+
+/* ===== SUBTITLE LANE: stays at the top above the card, drifts a little, then disappears ===== */
+.subs{--y0:66px;--y1:102px}
+body:has(#modal:not(.hidden)) .subs{display:none}
+
+@media (max-width:700px),(max-height:760px){
+  body{padding-top:108px}
+}
+
+/* ===== SIDE LYRICS ===== */
+.lyrSide{display:none;position:fixed;top:50%;transform:translateY(-50%);width:calc(50vw - 340px);max-width:680px;z-index:4;pointer-events:none}
+.lyrSide.left{left:3vw;text-align:left}
+.lyrSide.right{right:3vw;text-align:right}
+@media(min-width:1100px){.lyrSide{display:block}}
+.ln{margin:0 0 20px;font-weight:800;font-size:clamp(22px,2.3vw,38px);line-height:1.25;color:rgba(255,255,255,.26);
+    transition:color .4s,transform .5s,filter .4s;text-shadow:0 2px 14px #00000055}
+.left .ln{transform-origin:left center}.right .ln{transform-origin:right center}
+.ln.done{color:rgba(255,255,255,.45)}
+.ln.on{color:rgba(255,255,255,.55);transform:scale(1.07)}
+.ln .w{transition:color .25s,text-shadow .3s}
+.ln.on .w.fill{color:#fff;text-shadow:0 0 16px #ff4d94,0 0 32px #ff4d9477}
+.pair.inL .ln{animation:lyrInL .8s cubic-bezier(.2,.9,.3,1.1) backwards}
+.pair.inR .ln{animation:lyrInR .8s cubic-bezier(.2,.9,.3,1.1) backwards}
+.pair .ln:nth-child(2){animation-delay:.15s}
+.pair.leave{animation:lyrOut .5s ease forwards}
+@keyframes lyrInL{from{opacity:0;transform:translateX(-80px);filter:blur(10px)}to{opacity:1;filter:blur(0)}}
+@keyframes lyrInR{from{opacity:0;transform:translateX(80px);filter:blur(10px)}to{opacity:1;filter:blur(0)}}
+@keyframes lyrOut{to{opacity:0;filter:blur(8px);transform:scale(.96)}}
+body:not(.dark) .ln{color:rgba(168,23,89,.28);text-shadow:0 2px 12px #ffffff80}
+body:not(.dark) .ln.done{color:rgba(168,23,89,.45)}
+body:not(.dark) .ln.on{color:rgba(168,23,89,.55)}
+body:not(.dark) .ln.on .w.fill{color:#a81759;text-shadow:0 0 14px #ffffffcc}
 </style>
 </head>
 <body class="dark">
@@ -221,7 +281,13 @@ body.dark .player.playing{animation:beatD 1.2s ease-in-out infinite}
   </section>
 </main>
 
+<div class="lyrSide left" id="lyrL"></div><div class="lyrSide right" id="lyrR"></div>
 <div class="subs"><span id="subText"></span></div>
+<script type="text/plain" id="lyricsText">
+# PASTE YOUR SIDE LYRICS BELOW THIS LINE (one line per row, no quotes needed).
+# Lines starting with # are ignored. Leave empty to use the built-in lines.
+# Optional exact timing: start a line with [minutes:seconds], e.g. [00:12] your line
+</script>
 <audio id="bgm" src="music.mp3" loop preload="auto"></audio>
 <div class="player hidden" id="player">
   <span class="bars" id="bars"><i></i><i></i><i></i><i></i></span><span class="eq" id="eq">Earrings</span>
@@ -367,7 +433,7 @@ $('vol').addEventListener('input', () => {
 // ===== SUBTITLES: a new line every CAP_EVERY seconds =====
 // To change the speed, edit CAP_EVERY. To change the words, edit the list.
 const CAP_EVERY = 5;
-const CAPTIONS = [
+const CAPTIONS_RAW = [
     '♪ Now playing: Earrings — Malcolm Todd ♪',
     'Hi Irish 💗',
     'I made this page just for you',
@@ -398,15 +464,35 @@ const CAPTIONS = [
     'Almost done… I think 🥺',
     'You’re really special, Irish ♡',
     'Thank you again, Irish 💗'
-].map((text, i) => ({ t: i * CAP_EVERY, text }));
+];
+// Each item can be a plain string (auto-timed every CAP_EVERY seconds)
+// or { t: seconds, text: '...' } if you want an exact time for that line.
+let _t = -CAP_EVERY;
+const CAPTIONS = CAPTIONS_RAW.map(x => {
+    if (typeof x === 'object'){ _t = x.t; return { t: x.t, text: x.text }; }
+    _t += CAP_EVERY; return { t: _t, text: x };
+});
+
 let ccOn = true, capIdx = -1;
 function showCap(i){
-    const el = $('subText');
+    const el = $('subText'), wrap = el.parentElement;
     if (i < 0 || !ccOn){ el.innerHTML = ''; return; }
     el.style.animation = 'none'; void el.offsetWidth; el.style.animation = '';
+    // restart the slow "drift down" animation for the new line
+    wrap.style.animation = 'none'; void wrap.offsetWidth;
+    wrap.style.animation = `subFall ${CAP_EVERY}s linear forwards`;
+    wrap.style.animationPlayState = bgm.paused ? 'paused' : 'running';
     el.innerHTML = CAPTIONS[i].text.split(' ').map((w,k) => `<span style="animation-delay:${(k*0.09).toFixed(2)}s">${w}</span>`).join(' ');
-    tapBurst(innerWidth/2, innerHeight - 90);
+    // stick the subtitle just above the card, drift down a little, then vanish
+    const top = document.querySelector('.card').getBoundingClientRect().top;
+    const y1 = Math.max(62, top - el.offsetHeight - 8);
+    const y0 = Math.max(58, y1 - 26);
+    wrap.style.setProperty('--y0', y0 + 'px');
+    wrap.style.setProperty('--y1', y1 + 'px');
+    tapBurst(innerWidth/2, y1 + 14);
 }
+bgm.addEventListener('pause', () => { $('subText').parentElement.style.animationPlayState = 'paused'; });
+bgm.addEventListener('play',  () => { $('subText').parentElement.style.animationPlayState = 'running'; });
 function updateCap(){
     const t = bgm.currentTime; let idx = -1;
     for (let i=0;i<CAPTIONS.length;i++) if (t >= CAPTIONS[i].t) idx = i;
@@ -416,9 +502,116 @@ bgm.addEventListener('timeupdate', () => { if (ccOn) updateCap(); });
 $('ccBtn').addEventListener('click', () => {
     ccOn = !ccOn;
     $('ccBtn').classList.toggle('on', ccOn);
-    capIdx = -1;
-    if (ccOn) updateCap(); else $('subText').innerHTML = '';
+    capIdx = -1; lyrIdx = -1; lyrGroup = -2;
+    if (ccOn) updateCap(); else { $('subText').innerHTML = ''; clearSide(); }
 });
+
+
+// ===== SIDE LYRICS (Spotify-style): 2 lines on the left, then 2 on the right, and so on =====
+// This list is separate from the top subtitle. Put your own lines here.
+// Each item can be a plain string (auto-timed every LYR_EVERY seconds)
+// or { t: seconds, text: '...' } for an exact time.
+const LYR_EVERY = 7;
+const LYRICS_RAW = [
+];
+let _lt = -LYR_EVERY;
+let LYRICS = LYRICS_RAW.map(x => {
+    if (typeof x === 'object'){ _lt = x.t; return { t: x.t, text: x.text }; }
+    _lt += LYR_EVERY; return { t: _lt, text: x };
+});
+
+const lyrL = $('lyrL'), lyrR = $('lyrR');
+let lyrIdx = -1, lyrGroup = -2;
+const wideLyrics = () => matchMedia('(min-width:1100px)').matches;
+const esc = t => t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function clearSide(){ lyrL.innerHTML = ''; lyrR.innerHTML = ''; }
+function renderPair(panel, g){
+    const dir = panel === lyrL ? 'inL' : 'inR';
+    let html = '';
+    for (let k=0;k<2;k++){
+        const c = LYRICS[g*2+k]; if (!c) break;
+        html += '<p class="ln">' + c.text.split(' ').map(w => '<span class="w">' + esc(w) + '</span>').join(' ') + '</p>';
+    }
+    panel.innerHTML = '<div class="pair ' + dir + '">' + html + '</div>';
+}
+function sideChange(idx){
+    if (!wideLyrics()) return;
+    if (idx < 0 || !ccOn){ clearSide(); lyrGroup = -2; return; }
+    const g = Math.floor(idx/2);
+    const panel = g % 2 === 0 ? lyrL : lyrR, other = panel === lyrL ? lyrR : lyrL;
+    if (g !== lyrGroup){
+        const leaving = other.firstElementChild;
+        if (leaving){
+            leaving.classList.add('leave');
+            setTimeout(() => { if (other.firstElementChild === leaving) other.innerHTML = ''; }, 550);
+        }
+        renderPair(panel, g); lyrGroup = g;
+    }
+    panel.querySelectorAll('.ln').forEach((ln,k) => {
+        const li = g*2 + k;
+        ln.classList.toggle('on', li === idx);
+        ln.classList.toggle('done', li < idx);
+        ln.classList.toggle('next', li > idx);
+        if (li !== idx) ln.querySelectorAll('.w').forEach(w => w.classList.remove('fill'));
+    });
+}
+function updateLyr(){
+    const t = bgm.currentTime; let idx = -1;
+    for (let i=0;i<LYRICS.length;i++) if (t >= LYRICS[i].t) idx = i;
+    if (idx !== lyrIdx){ lyrIdx = idx; sideChange(idx); }
+}
+function karaoke(){
+    if (!wideLyrics() || lyrIdx < 0) return;
+    const g = Math.floor(lyrIdx/2), panel = g % 2 === 0 ? lyrL : lyrR;
+    const ln = panel.querySelectorAll('.ln')[lyrIdx % 2]; if (!ln) return;
+    const start = LYRICS[lyrIdx].t, nx = LYRICS[lyrIdx+1];
+    const end = nx ? nx.t : start + LYR_EVERY;
+    const frac = Math.min(1, Math.max(0, (bgm.currentTime - start) / Math.max(.5, end - start) * 1.2));
+    const ws = ln.querySelectorAll('.w'), n = Math.ceil(frac * ws.length);
+    ws.forEach((w,i) => w.classList.toggle('fill', i < n));
+}
+setInterval(() => {
+    if (!ccOn) return;
+    if (bgm.paused && capIdx < 0) return;
+    updateCap(); updateLyr(); karaoke();
+}, 100);
+matchMedia('(min-width:1100px)').addEventListener('change', () => { lyrIdx = -1; lyrGroup = -2; clearSide(); });
+
+
+// ===== OPTIONAL: load side lyrics from lyrics.txt (same folder as this page) =====
+// One line per row. Optional timestamps like [00:12] or [01:05.5] at the start of a line.
+// Lines starting with # are ignored. Works when the page is online (e.g. GitHub Pages).
+let lyrItems = null;
+function setLyrics(items, step){
+    let t = -step;
+    LYRICS = items.map(x => {
+        if (typeof x === 'object'){ t = x.t; return { t: x.t, text: x.text }; }
+        t += step; return { t, text: x };
+    });
+    lyrIdx = -1; lyrGroup = -2; clearSide();
+}
+function parseLyricsFile(txt){
+    const out = [];
+    txt.split(/\r?\n/).map(l => l.trim()).filter(l => l && !l.startsWith('#')).forEach(l => {
+        const m = l.match(/^\[(\d+):(\d+(?:\.\d+)?)\]\s*(.*)$/);
+        if (m){ if (m[3]) out.push({ t: (+m[1])*60 + parseFloat(m[2]), text: m[3] }); }
+        else out.push(l);
+    });
+    return out;
+}
+function applyFileLyrics(){
+    if (!lyrItems) return;
+    const ok = isFinite(bgm.duration) && bgm.duration > 10;
+    const step = ok ? Math.max(2, (bgm.duration - 6) / Math.max(1, lyrItems.length)) : LYR_EVERY;
+    setLyrics(lyrItems, step);
+}
+const _emb = parseLyricsFile($('lyricsText').textContent);
+if (_emb.length){ lyrItems = _emb; applyFileLyrics(); } else
+fetch('lyrics.txt', { cache: 'no-store' })
+    .then(r => r.ok ? r.text() : Promise.reject())
+    .then(txt => { const items = parseLyricsFile(txt); if (items.length){ lyrItems = items; applyFileLyrics(); } })
+    .catch(() => {});
+bgm.addEventListener('loadedmetadata', applyFileLyrics);
 
 // ===== MUSIC EFFECTS: beat glow + floating notes =====
 bgm.addEventListener('play',  () => $('player').classList.add('playing'));
@@ -492,9 +685,9 @@ function vizLoop(now){
     vctx.fillStyle = g; vctx.fillRect(0,0,vw,vh);
 
     // mirrored waveform bars (bass in the middle, highs toward the edges)
-    const gap = vw / (BARS + 1), maxH = vh * .82;
+    const gap = vw / (BARS + 1), maxH = vh * .6;
     vctx.lineCap = 'round'; vctx.lineWidth = Math.max(4, gap * .5);
-    vctx.strokeStyle = '#ffffff'; vctx.shadowColor = '#ff4d94'; vctx.shadowBlur = 14;
+    vctx.strokeStyle = 'rgba(255,255,255,.8)'; vctx.shadowColor = '#ff4d94'; vctx.shadowBlur = 14;
     for (let i=0;i<BARS;i++){
         const d = Math.abs(i - (BARS-1)/2) / half;      // 0 at center, 1 at edges
         let target;
