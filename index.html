@@ -17,8 +17,8 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.22;ba
 .pixel{font-family:'Press Start 2P',monospace;text-shadow:2px 2px 0 #ffc1dc;line-height:1.8}
 h1{font-size:clamp(16px,4vw,24px);color:#9c1253;margin:22px 0 14px}
 .sub{font-size:15px;margin:0 0 22px;color:#8f3c66}
-.avatar{width:104px;height:104px;display:grid;place-items:center;background:#ffffff50;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:2px solid #ffc2de;box-shadow:0 0 18px #ff5fa880,inset 0 0 14px #ffffff80;border-radius:50%;font-size:55px;margin:0 auto 10px;overflow:hidden}
-.avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.avatar{width:104px;height:104px;display:grid;place-items:center;background:#ffffff50;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:2px solid #ffc2de;box-shadow:0 0 18px #ff5fa880,inset 0 0 14px #ffffff80;border-radius:50%;font-size:55px;margin:0 auto 10px;overflow:visible}
+.avatar img{width:100%;height:100%;object-fit:cover;display:block;border-radius:50%}
 .actions{display:flex;gap:18px;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:18px;min-height:76px}
 button{font:800 16px Nunito,sans-serif;border:2px solid #ffffffb0;border-radius:999px;padding:12px 23px;cursor:pointer;transition:transform .16s,filter .16s;box-shadow:0 6px 18px #c51e6855,0 0 14px #ff5fa850}
 button:hover{filter:brightness(1.06);transform:translateY(-2px)}
@@ -107,6 +107,48 @@ body.dark button.themeBtn{color:#ffb3d6}
 body.dark button.themeBtn:hover{background:#ffffff1f}
 body.dark button.themeBtn.active{background:#ed347e;color:#fff}
 @media(max-width:430px){button.themeBtn{padding:6px 9px;font-size:11px}.themeSw{left:8px;top:8px}.player{right:8px;bottom:8px}}
+
+/* ===== SUBTITLES + MUSIC EFFECTS ===== */
+.subs{position:fixed;left:50%;bottom:76px;transform:translateX(-50%);width:min(88vw,520px);text-align:center;z-index:55;pointer-events:none}
+#subText{display:inline-block;padding:9px 16px;border-radius:18px;background:#fff6fbe6;color:#a81759;font:800 15px/1.45 Nunito,sans-serif;box-shadow:0 0 18px #ff5fa870,0 6px 18px #a8175940;border:1.5px solid #ffc2de;animation:boxIn .5s cubic-bezier(.2,.9,.3,1.3) backwards}
+#subText:empty{display:none}
+#subText span{display:inline-block;margin:0 .16em;animation:wordIn .55s cubic-bezier(.2,.9,.3,1.4) backwards}
+@keyframes boxIn{from{opacity:0;transform:translateY(14px) scale(.9)}to{opacity:1;transform:none}}
+@keyframes wordIn{from{opacity:0;transform:translateY(10px) scale(.6);filter:blur(4px)}to{opacity:1;transform:none;filter:blur(0)}}
+.bars{display:flex;align-items:flex-end;gap:2px;height:16px;padding-left:8px}
+.bars i{display:block;width:3px;height:100%;background:#ed347e;border-radius:2px;transform-origin:bottom;animation:eqb .8s ease-in-out infinite}
+.bars i:nth-child(2){animation-delay:.2s}.bars i:nth-child(3){animation-delay:.4s}.bars i:nth-child(4){animation-delay:.1s}
+.player:not(.playing) .bars i{animation-play-state:paused;transform:scaleY(.3)}
+@keyframes eqb{0%,100%{transform:scaleY(.25)}50%{transform:scaleY(1)}}
+.player.playing{animation:beat 1.2s ease-in-out infinite}
+@keyframes beat{0%,100%{box-shadow:0 0 14px #ff5fa860,0 8px 20px #a8175940}50%{box-shadow:0 0 28px #ff5fa8c0,0 8px 20px #a8175940}}
+button.pbtn:not(.on){opacity:.45}
+.fnote{position:fixed;z-index:58;pointer-events:none;font-size:20px;color:#ff4d94;text-shadow:0 0 10px #ff9ccb;animation:floatUp 3.4s ease-out forwards}
+@keyframes floatUp{0%{opacity:0;transform:translate(0,0) scale(.6)}15%{opacity:1}100%{opacity:0;transform:translate(var(--dx,20px),-190px) rotate(var(--rot,15deg)) scale(1.1)}}
+body.dark #subText{background:#2a0c33e6;color:#ffb3d6;border-color:#ff7eb688;box-shadow:0 0 18px #ff3d8a50,0 6px 18px #00000070}
+body.dark .player.playing{animation:beatD 1.2s ease-in-out infinite}
+@keyframes beatD{0%,100%{box-shadow:0 0 14px #ff3d8a50,0 8px 20px #00000070}50%{box-shadow:0 0 28px #ff3d8ab0,0 8px 20px #00000070}}
+@media(max-width:430px){#subText{font-size:13px;padding:8px 12px}.subs{bottom:68px}}
+
+#vol{width:78px;height:4px;margin:0 4px;accent-color:#ed347e;cursor:pointer;vertical-align:middle}
+@media(max-width:430px){#vol{width:58px}.player .eq{display:none}}
+
+/* ===== MUSIC VISUALIZER BEHIND THE CARD ===== */
+#viz{position:fixed;left:50%;top:50%;width:min(100vw,900px);height:440px;transform:translate(-50%,-50%);pointer-events:none;z-index:0}
+.card{backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
+
+/* ===== LED GLOW RING AROUND AVATARS ===== */
+.avatar{position:relative;isolation:isolate;margin-bottom:16px}
+.avatar::before,.avatar::after{content:"";position:absolute;border-radius:50%;z-index:-1;pointer-events:none;
+  background:conic-gradient(#ff2d85,#ff9ccb,#ffffff,#ff9ccb,#ff2d85,#c77dff,#ff6bb0,#ff2d85)}
+.avatar::before{inset:-6px;
+  -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 4px),#000 calc(100% - 3px));
+          mask:radial-gradient(farthest-side,transparent calc(100% - 4px),#000 calc(100% - 3px));
+  animation:ledSpin 2.6s linear infinite}
+.avatar::after{inset:-9px;filter:blur(13px);opacity:.85;animation:ledSpin 2.6s linear infinite,ledPulse 1.8s ease-in-out infinite}
+@keyframes ledSpin{to{transform:rotate(360deg)}}
+@keyframes ledPulse{0%,100%{opacity:.5}50%{opacity:.95}}
+@media(prefers-reduced-motion:reduce){.avatar::before,.avatar::after{animation:none}}
 </style>
 </head>
 <body class="dark">
@@ -115,6 +157,7 @@ body.dark button.themeBtn.active{background:#ed347e;color:#fff}
   <button type="button" class="themeBtn" id="lightBtn">☀️ Light</button>
 </div>
 <canvas id="fx"></canvas>
+<canvas id="viz"></canvas>
 <div class="cloud c1">☁</div><div class="cloud c2">☁</div><div class="cloud c3">♡</div><div class="cloud c4">✦</div>
 <main class="card">
   <section id="intro">
@@ -178,11 +221,14 @@ body.dark button.themeBtn.active{background:#ed347e;color:#fff}
   </section>
 </main>
 
+<div class="subs"><span id="subText"></span></div>
 <audio id="bgm" src="music.mp3" loop preload="auto"></audio>
 <div class="player hidden" id="player">
-  <span class="eq" id="eq">♪ Earrings</span>
+  <span class="bars" id="bars"><i></i><i></i><i></i><i></i></span><span class="eq" id="eq">Earrings</span>
   <button class="pbtn" id="playPause" aria-label="Pause / play">⏸</button>
   <button class="pbtn" id="muteBtn" aria-label="Mute / unmute">🔊</button>
+  <input type="range" id="vol" min="0" max="100" value="70" aria-label="Volume">
+  <button class="pbtn on" id="ccBtn" aria-label="Subtitles on/off" style="font-size:12px;font-weight:800">CC</button>
 </div>
 
 <div id="modal" class="modal hidden">
@@ -289,6 +335,7 @@ $('lightBtn').addEventListener('click', () => setTheme('light'));
 const bgm = $('bgm');
 bgm.volume = 0.7;
 $('startBtn').addEventListener('click', () => {
+    setupAnalyser();
     bgm.play().catch(()=>{});
     $('intro').classList.add('hidden');
     $('ask').classList.remove('hidden');
@@ -301,10 +348,175 @@ $('playPause').addEventListener('click', () => {
 });
 bgm.addEventListener('play',  () => { $('playPause').textContent = '⏸'; });
 bgm.addEventListener('pause', () => { $('playPause').textContent = '▶'; });
+function syncVolIcon(){
+    const v = bgm.volume;
+    $('muteBtn').textContent = (bgm.muted || v === 0) ? '🔇' : (v < 0.5 ? '🔉' : '🔊');
+}
 $('muteBtn').addEventListener('click', () => {
-    bgm.muted = !bgm.muted;
-    $('muteBtn').textContent = bgm.muted ? '🔇' : '🔊';
+    if (bgm.volume === 0){ bgm.volume = 0.5; $('vol').value = 50; bgm.muted = false; }
+    else bgm.muted = !bgm.muted;
+    syncVolIcon();
 });
+$('vol').addEventListener('input', () => {
+    bgm.volume = $('vol').value / 100;
+    if (bgm.volume > 0) bgm.muted = false;
+    syncVolIcon();
+});
+
+
+// ===== SUBTITLES: a new line every CAP_EVERY seconds =====
+// To change the speed, edit CAP_EVERY. To change the words, edit the list.
+const CAP_EVERY = 5;
+const CAPTIONS = [
+    '♪ Now playing: Earrings — Malcolm Todd ♪',
+    'Hi Irish 💗',
+    'I made this page just for you',
+    'Thank you for taking a moment for me',
+    'You make ordinary days feel softer ✨',
+    'Take your time, I’m not going anywhere',
+    'No pressure, just my honest heart 🥺',
+    'I hope this made you smile a little',
+    'You’re kind of the best part of my day',
+    'Your laugh is my favorite sound ♡',
+    'I get shy just thinking about this ;-;',
+    'Thank you for being you',
+    'Even small moments with you feel big',
+    'I’d choose patience for you, always',
+    'You deserve soft things and gentle people',
+    'Hope your day is going okay 🌷',
+    'No matter what, I’m glad I met you',
+    'You’re a diamond, I mean it 💎',
+    'Okay, deep breath… I’m fine 😭',
+    'Don’t mind my heart, it’s loud right now',
+    'Thank you for reading all of this',
+    'I’ll keep being kind, I promise',
+    'You can always tell me how you feel',
+    'Honesty is all I ask 🤍',
+    'Look at us, sharing a song ♪',
+    'I hope this song feels like a hug',
+    'Stay a little longer, okay?',
+    'Almost done… I think 🥺',
+    'You’re really special, Irish ♡',
+    'Thank you again, Irish 💗'
+].map((text, i) => ({ t: i * CAP_EVERY, text }));
+let ccOn = true, capIdx = -1;
+function showCap(i){
+    const el = $('subText');
+    if (i < 0 || !ccOn){ el.innerHTML = ''; return; }
+    el.style.animation = 'none'; void el.offsetWidth; el.style.animation = '';
+    el.innerHTML = CAPTIONS[i].text.split(' ').map((w,k) => `<span style="animation-delay:${(k*0.09).toFixed(2)}s">${w}</span>`).join(' ');
+    tapBurst(innerWidth/2, innerHeight - 90);
+}
+function updateCap(){
+    const t = bgm.currentTime; let idx = -1;
+    for (let i=0;i<CAPTIONS.length;i++) if (t >= CAPTIONS[i].t) idx = i;
+    if (idx !== capIdx){ capIdx = idx; showCap(idx); }
+}
+bgm.addEventListener('timeupdate', () => { if (ccOn) updateCap(); });
+$('ccBtn').addEventListener('click', () => {
+    ccOn = !ccOn;
+    $('ccBtn').classList.toggle('on', ccOn);
+    capIdx = -1;
+    if (ccOn) updateCap(); else $('subText').innerHTML = '';
+});
+
+// ===== MUSIC EFFECTS: beat glow + floating notes =====
+bgm.addEventListener('play',  () => $('player').classList.add('playing'));
+bgm.addEventListener('pause', () => $('player').classList.remove('playing'));
+setInterval(() => {
+    if (bgm.paused || bgm.muted || $('player').classList.contains('hidden')) return;
+    const n = document.createElement('div');
+    n.className = 'fnote';
+    n.textContent = ['♪','♫','♡','✦','♪'][Math.floor(Math.random()*5)];
+    n.style.right = (14 + Math.random()*150) + 'px';
+    n.style.bottom = '58px';
+    n.style.setProperty('--dx', (Math.random()*60-30) + 'px');
+    n.style.setProperty('--rot', (Math.random()*40-20) + 'deg');
+    document.body.appendChild(n);
+    n.addEventListener('animationend', () => n.remove());
+}, 900);
+
+
+// ===== VISUALIZER (reacts to the music, sits behind the card) =====
+const viz = $('viz'), vctx = viz.getContext('2d');
+const BARS = 46, levels = new Array(BARS).fill(0);
+let actx = null, analyser = null, fdata = null, useReal = false, vizRunning = false, master = 0, vw = 0, vh = 0;
+
+function resizeViz(){
+    const d = window.devicePixelRatio || 1, r = viz.getBoundingClientRect();
+    vw = r.width; vh = r.height;
+    viz.width = vw * d; viz.height = vh * d;
+    vctx.setTransform(d,0,0,d,0,0);
+}
+resizeViz(); addEventListener('resize', resizeViz);
+
+function setupAnalyser(){
+    if (actx) { actx.resume && actx.resume(); return; }
+    // Real audio analysis only works when the page is served over http(s) (like GitHub Pages).
+    // Opened as a plain file, browsers block it, so we use a simulated visualizer instead.
+    if (!/^https?:$/.test(location.protocol)) return;
+    try {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        actx = new AC();
+        const src = actx.createMediaElementSource(bgm);
+        analyser = actx.createAnalyser();
+        analyser.fftSize = 256;
+        analyser.smoothingTimeConstant = 0.78;
+        src.connect(analyser); analyser.connect(actx.destination);
+        fdata = new Uint8Array(analyser.frequencyBinCount);
+        useReal = true;
+        actx.resume && actx.resume();
+    } catch(e){ useReal = false; }
+}
+
+function vizLoop(now){
+    const playing = !bgm.paused;
+    master += ((playing ? 1 : 0) - master) * 0.06;
+    const half = BARS/2, t = now/1000;
+    let bass = 0;
+    if (useReal && analyser){
+        analyser.getByteFrequencyData(fdata);
+        for (let i=1;i<=6;i++) bass += fdata[i];
+        bass = bass/6/255;
+    } else {
+        bass = (Math.sin(t*Math.PI*2*1.9)*.5+.5) * .8;
+    }
+    vctx.clearRect(0,0,vw,vh);
+    const cx = vw/2, cy = vh/2;
+
+    // pulsing pink glow
+    const gr = 140 + bass*170 * master;
+    const g = vctx.createRadialGradient(cx,cy,0,cx,cy,gr);
+    g.addColorStop(0, `rgba(255,77,148,${(.18 + bass*.35) * master})`);
+    g.addColorStop(1, 'rgba(255,77,148,0)');
+    vctx.fillStyle = g; vctx.fillRect(0,0,vw,vh);
+
+    // mirrored waveform bars (bass in the middle, highs toward the edges)
+    const gap = vw / (BARS + 1), maxH = vh * .82;
+    vctx.lineCap = 'round'; vctx.lineWidth = Math.max(4, gap * .5);
+    vctx.strokeStyle = '#ffffff'; vctx.shadowColor = '#ff4d94'; vctx.shadowBlur = 14;
+    for (let i=0;i<BARS;i++){
+        const d = Math.abs(i - (BARS-1)/2) / half;      // 0 at center, 1 at edges
+        let target;
+        if (useReal && analyser){
+            const bin = 1 + Math.floor(d * 70);
+            target = Math.pow(fdata[bin]/255, 1.15) * (1 - d*.45);
+        } else {
+            target = ((Math.sin(t*3.1 + i*.55) + Math.sin(t*5.3 + i*.9) + 2)/4) * (.3 + bass*.7) * (1 - d*.5);
+        }
+        levels[i] += (target*master - levels[i]) * 0.35;
+        const h = Math.max(4, levels[i] * maxH);
+        const x = gap * (i+1);
+        vctx.globalAlpha = Math.min(1, .25 + master*.75);
+        vctx.beginPath(); vctx.moveTo(x, cy - h/2); vctx.lineTo(x, cy + h/2); vctx.stroke();
+    }
+    vctx.globalAlpha = 1; vctx.shadowBlur = 0;
+
+    if (playing || master > 0.02) requestAnimationFrame(vizLoop);
+    else { vizRunning = false; vctx.clearRect(0,0,vw,vh); }
+}
+function vizStart(){ if (!vizRunning){ vizRunning = true; requestAnimationFrame(vizLoop); } }
+bgm.addEventListener('play', vizStart);
 
 // ===== CONFETTI + FIREWORKS =====
 const fx = $('fx'), ctx = fx.getContext('2d');
