@@ -66,9 +66,54 @@ input,select{width:100%;padding:12px;border:2px solid #ffffffb0;border-radius:16
 .letter p{line-height:1.7;font-size:16px}
 .close{position:absolute;right:10px;top:8px;border:0;box-shadow:none;background:none;color:#b51e62;font-size:22px;padding:2px 8px}
 @media(max-width:430px){.card{min-height:540px;padding:26px 16px}.options{gap:8px}.option{font-size:12px;padding:10px 5px}}
+
+/* ===== THEME SWITCH ===== */
+.themeSw{position:fixed;left:14px;top:14px;z-index:60;display:flex;gap:4px;padding:5px;background:#ffffff70;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1.5px solid #ffc2de;border-radius:999px;box-shadow:0 0 18px #ff5fa860,0 8px 20px #a8175940}
+button.themeBtn{padding:7px 12px;font:800 12px Nunito,sans-serif;border-radius:999px;background:transparent;color:#bd286a;border:0;box-shadow:none}
+button.themeBtn:hover{transform:none;filter:none;background:#ffffff80}
+button.themeBtn.active{background:#ed347e;color:#fff}
+
+/* ===== DARK MODE (default) ===== */
+body.dark{color:#ffd9ea;background:linear-gradient(180deg,#1b0a22,#3b1140 60%,#5c1648)}
+body.dark:before{opacity:.07}
+body.dark .cloud{color:#ffb3d6;opacity:.3;filter:drop-shadow(0 4px 0 #5a1745)}
+body.dark .card{background:linear-gradient(135deg,#ffffff12,#ff5fa81c);border-color:#ff7eb666;box-shadow:0 0 30px #ff3d8a40,0 20px 50px #00000070,inset 0 0 25px #ffffff0d}
+body.dark .pixel{text-shadow:2px 2px 0 #4a1038}
+body.dark h1{color:#ff9ccb}
+body.dark .sub{color:#f0b8d4}
+body.dark .note{color:#d78bb0}
+body.dark .avatar{background:#ffffff14;border-color:#ff7eb6aa;box-shadow:0 0 18px #ff3d8a70,inset 0 0 14px #ffffff18}
+body.dark .no,body.dark .note-btn{background:#ffffff1f;color:#ff9ccb;border-color:#ff7eb680}
+body.dark .option{background:#ffffff14;color:#ffb3d6;border-color:#ff7eb666;box-shadow:0 4px 12px #00000040}
+body.dark .option.selected{background:#ff5b9d;color:#fff}
+body.dark input,body.dark select{background:#ffffff14;color:#ffd9ea;border-color:#ff7eb666}
+body.dark .modal{background:#12041af0}
+body.dark .letter{background:linear-gradient(135deg,#3a1240f0,#2a0c33f0);border-color:#ff7eb666;box-shadow:0 0 30px #ff3d8a50,0 20px 50px #000000a0,inset 0 0 20px #ffffff0d;color:#ffd9ea}
+body.dark .letter h2{color:#ff9ccb}
+body.dark .close{color:#ff9ccb}
+body.dark .cal{background:#ffffff10;border-color:#ff7eb666;box-shadow:0 4px 14px #00000040}
+body.dark .cal-head{color:#ffb3d6}
+body.dark button.cal-nav{background:#ffffff1f;color:#ff9ccb}
+body.dark .cal-grid .dow{background:#ffffff14;color:#ffb3d6}
+body.dark .cal-grid .dow.sun{color:#ff6b8f}
+body.dark button.day{color:#ffd9ea}
+body.dark button.day.sun{color:#ff6b8f}
+body.dark button.day:hover:not(:disabled){background:#ffffff22}
+body.dark button.day.sel{background:#ed347e;color:#fff}
+body.dark .player,body.dark .themeSw{background:#2a0c33cc;border-color:#ff7eb688;box-shadow:0 0 18px #ff3d8a50,0 8px 20px #00000070}
+body.dark .player .eq{color:#ffb3d6}
+body.dark button.pbtn{background:#ffffff1f;color:#ff9ccb;border-color:#ff7eb666}
+body.dark button.themeBtn{color:#ffb3d6}
+body.dark button.themeBtn:hover{background:#ffffff1f}
+body.dark button.themeBtn.active{background:#ed347e;color:#fff}
+@media(max-width:430px){button.themeBtn{padding:6px 9px;font-size:11px}.themeSw{left:8px;top:8px}.player{right:8px;bottom:8px}}
 </style>
 </head>
-<body>
+<body class="dark">
+<div class="themeSw" id="themeSw">
+  <button type="button" class="themeBtn active" id="darkBtn">🌙 Dark</button>
+  <button type="button" class="themeBtn" id="lightBtn">☀️ Light</button>
+</div>
 <canvas id="fx"></canvas>
 <div class="cloud c1">☁</div><div class="cloud c2">☁</div><div class="cloud c3">♡</div><div class="cloud c4">✦</div>
 <main class="card">
@@ -227,6 +272,18 @@ $('noteBtn').addEventListener('click', () => {
 });
 
 
+
+
+// ===== THEME (dark by default) =====
+function setTheme(mode, save=true){
+    document.body.classList.toggle('dark', mode === 'dark');
+    $('darkBtn').classList.toggle('active', mode === 'dark');
+    $('lightBtn').classList.toggle('active', mode !== 'dark');
+    if(save){ try{ localStorage.setItem('theme', mode); }catch(e){} }
+}
+$('darkBtn').addEventListener('click', () => setTheme('dark'));
+$('lightBtn').addEventListener('click', () => setTheme('light'));
+(function(){ let m='dark'; try{ m = localStorage.getItem('theme') || 'dark'; }catch(e){} setTheme(m, false); })();
 
 // ===== MUSIC + INTRO =====
 const bgm = $('bgm');
